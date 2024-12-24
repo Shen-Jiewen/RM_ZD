@@ -1,0 +1,19 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Wdr_outpost" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="android:windowSplashScreenBackground">@color/white</item> <!-- 启动页背景改为白色 -->
+        <item name="android:windowSplashScreenAnimatedIcon">@color/white</item> <!-- 启动页图标改为默认白色-->
+<!--        <item name="android:windowSplashScreenBrandingImage">@mipmap/wdr_icon</item>-->
+        <item name="android:windowBackground">@color/white</item> <!-- 背景色改为白色 -->
+        <item name="android:statusBarColor">@color/light_blue</item> <!-- 通知栏颜色改为浅蓝色 -->
+    </style>
+
+    <style name="Theme.Wdr_outpost" parent="Base.Theme.Wdr_outpost" />
+
+    <!-- 主页面标题栏样式 -->
+    <style name="CustomToolbarStyle" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/light_blue</item> <!-- 标题栏背景色为浅蓝色 -->
+        <item name="android:titleTextColor">@color/white</item> <!-- 标题文字颜色为白色 -->
+    </style>
+</resources>

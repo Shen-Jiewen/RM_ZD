@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CustomSwitchMaterial" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/custom_thumb_color</item>
+        <item name="trackTint">@color/custom_track_color</item>
+        <item name="android:thumb">@drawable/custom_switch_thumb</item>
+        <item name="android:track">@drawable/custom_switch_track</item>
+    </style>
+
+</resources>

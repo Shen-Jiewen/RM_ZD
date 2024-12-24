@@ -1,0 +1,14 @@
+<resources>
+    <color name="black">#000000</color> <!-- 黑色 -->
+    <color name="white">#FFFFFF</color> <!-- 白色 -->
+    <color name="light_blue">#87CEEB</color> <!-- 浅蓝色 -->
+    <color name="red">#FF0000</color> <!-- 红色 -->
+    <color name="blue">#0000FF</color> <!-- 蓝色 -->
+    <color name="button_gradient_start">#FF0000</color> <!-- 渐变开始颜色：红色 -->
+    <color name="button_gradient_end">#0000FF</color> <!-- 渐变结束颜色：蓝色 -->
+    <color name="received_text_color">#009900</color> <!-- 接收数据颜色：绿色 -->
+    <color name="sent_text_color">#FF0000</color> <!-- 发送数据颜色：红色 -->
+
+    <color name="custom_thumb_color">#FF5722</color> <!-- 橙色 -->
+    <color name="custom_track_color">#FFCCBC</color> <!-- 浅橙色 -->
+</resources>

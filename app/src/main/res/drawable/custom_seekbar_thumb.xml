@@ -1,0 +1,34 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 左半部分：橙色 -->
+    <item
+        android:right="5dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#3BABFF" />
+            <size
+                android:width="10dp"
+                android:height="18dp" />
+        </shape>
+    </item>
+
+    <!-- 右半部分：灰色 -->
+    <item
+        android:left="15dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" />
+            <size
+                android:width="10dp"
+                android:height="18dp" />
+        </shape>
+    </item>
+
+    <!-- 圆形:蓝色 -->
+    <item
+        android:left="6dp">
+        <shape android:shape="oval">
+            <solid android:color="#3BABFF" />
+            <size
+                android:width="10dp"
+                android:height="18dp" />
+        </shape>
+    </item>
+</layer-list>
