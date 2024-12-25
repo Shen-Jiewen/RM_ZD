@@ -19,15 +19,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- 自定义标题文字 -->
-        <TextView
-            android:id="@+id/toolbarTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:text="前哨站"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:layout_gravity="start" />
+        <!-- 自定义图片 -->
+        <ImageView
+            android:id="@+id/toolbarLogo"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:src="@drawable/logo_white_h"/>
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -39,7 +36,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/scanButton"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
 
     <!-- 扫描按钮 -->
     <Button
@@ -49,7 +48,7 @@
         android:layout_marginBottom="48dp"
         android:backgroundTint="@color/light_blue"
         android:stateListAnimator="@animator/button_press_animator"
-        android:text="扫描蓝牙设备"
+        android:text="机甲大师启动!"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

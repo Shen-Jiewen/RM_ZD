@@ -2,8 +2,6 @@ package com.example.wdr_outpost;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -15,7 +13,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -43,9 +40,10 @@ public class MainActivity extends AppCompatActivity {
     private final ArrayList<String> deviceList = new ArrayList<>();
     private BluetoothDeviceAdapter adapter;
 
-    private final List<String> macAddressList = Arrays.asList(
-            "55:78:44:02:6B:DF",
-            "90:F0:52:C8:E9:53"
+    // 指定要显示的设备名称列表
+    private final List<String> deviceNameList = Arrays.asList(
+            "Javen_m",
+            "JDY-31-SPP"
     );
 
     // Activity Result API 用于请求权限
@@ -85,10 +83,10 @@ public class MainActivity extends AppCompatActivity {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device != null) {
-                    String deviceMacAddress = device.getAddress();
-                    // 检查设备 MAC 地址是否在配置列表中
-                    if (macAddressList.contains(deviceMacAddress)) {
-                        @SuppressLint("MissingPermission") String deviceInfo = device.getName() + " [Classic]\n" + deviceMacAddress;
+                    @SuppressLint("MissingPermission") String deviceName = device.getName();
+                    // 检查设备名称是否在配置列表中
+                    if (deviceName != null && deviceNameList.contains(deviceName)) {
+                        @SuppressLint("MissingPermission") String deviceInfo = device.getName() + " [Classic]\n" + device.getAddress();
                         if (!deviceList.contains(deviceInfo)) {
                             deviceList.add(deviceInfo);
                             adapter.notifyItemInserted(deviceList.size() - 1); // 通知插入新项

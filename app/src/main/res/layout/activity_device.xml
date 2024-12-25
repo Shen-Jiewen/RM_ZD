@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        android:background="#FFFFFF">
+        android:background="@color/light_blue">
 
         <!-- 返回按键 -->
         <ImageView
@@ -59,7 +59,7 @@
             android:adjustViewBounds="true"
             android:layout_gravity="center"
             android:scaleType="centerCrop"
-            android:src="@drawable/qianshaozhan_img" />
+            android:src="@drawable/device_image1" />
 
     </androidx.cardview.widget.CardView>
 
@@ -226,18 +226,19 @@
 
             <!-- EditText -->
             <EditText
+                android:id="@+id/et_health_value"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="8dp"
                 android:layout_alignTop="@id/tv_setting_name_4"
                 android:layout_alignBottom="@id/tv_setting_name_4"
-                android:layout_marginBottom="3dp"
-                android:layout_marginTop="3dp"
-                android:text="500"
+                android:text="2000"
+                android:textSize="14sp"
+                android:fontFamily="@font/custom_font"
                 android:inputType="number"
                 android:cursorVisible="false"
-                tools:ignore="RtlHardcoded" />
+                tools:ignore="HardcodedText,LabelFor,RtlHardcoded" />
 
             <!-- SeekBar -->
             <SeekBar
@@ -246,11 +247,11 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tv_setting_name_4"
                 android:layout_marginTop="10dp"
-                android:max="100"
-                android:progress="50"
+                android:max="50"
+                android:progress="20"
                 android:layout_alignParentStart="true"
                 android:progressDrawable="@drawable/custom_seekbar_progress"
-                android:thumb="@drawable/custom_seekbar_thumb" />
+                android:thumb="@drawable/custom_seekbar_thumb"/>
 
         </RelativeLayout>
 
