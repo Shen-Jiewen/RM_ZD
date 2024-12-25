@@ -49,6 +49,8 @@
         android:backgroundTint="@color/light_blue"
         android:stateListAnimator="@animator/button_press_animator"
         android:text="机甲大师启动!"
+        android:textSize="20sp"
+        android:fontFamily="@font/custom_font"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

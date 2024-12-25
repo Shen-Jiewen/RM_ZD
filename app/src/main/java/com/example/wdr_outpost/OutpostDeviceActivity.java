@@ -5,12 +5,12 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.widget.EditText;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,8 +23,9 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch switchSetting1, switchSetting2, switchSetting3;
     private SeekBar seekBar;
-    private EditText etHealthValue;
+    private TextView etHealthValue;
     private BluetoothCommunicator bluetoothComm;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,28 +42,30 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
         switchSetting2 = findViewById(R.id.sw_setting_2);
         switchSetting3 = findViewById(R.id.sw_setting_3);
         seekBar = findViewById(R.id.sb_setting_progress);
-        etHealthValue = findViewById(R.id.et_health_value);
+        etHealthValue = findViewById(R.id.tv_setting_name_4);
 
         ImageView ivBack = findViewById(R.id.iv_back);
         ivBack.setOnClickListener(v -> finish());
     }
 
     private void initializeBluetooth() {
-        BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        if (bluetoothManager == null || bluetoothManager.getAdapter() == null) {
-            showToastAndFinish("Bluetooth not available");
-            return;
-        }
+        new Thread(() -> {
+            BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            if (bluetoothManager == null || bluetoothManager.getAdapter() == null) {
+                handler.post(() -> showToastAndFinish("Bluetooth not available"));
+                return;
+            }
 
-        String deviceAddress = getIntent().getStringExtra("deviceMacAddress");
-        if (deviceAddress == null) {
-            showToastAndFinish("No device address provided");
-            return;
-        }
+            String deviceAddress = getIntent().getStringExtra("deviceMacAddress");
+            if (deviceAddress == null) {
+                handler.post(() -> showToastAndFinish("No device address provided"));
+                return;
+            }
 
-        bluetoothComm = new BluetoothCommunicator(this);
-        BluetoothDevice device = bluetoothManager.getAdapter().getRemoteDevice(deviceAddress);
-        bluetoothComm.connect(device);
+            bluetoothComm = new BluetoothCommunicator(this);
+            BluetoothDevice device = bluetoothManager.getAdapter().getRemoteDevice(deviceAddress);
+            bluetoothComm.connect(device);
+        }).start();
     }
 
     private void setupListeners() {
@@ -71,6 +74,7 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
         switchSetting3.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
@@ -82,7 +86,7 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
                         actualProgress = MAX_PROGRESS;
                         seekBar.setProgress(MAX_PROGRESS / 100);
                     }
-                    etHealthValue.setText(String.valueOf(actualProgress));
+                    etHealthValue.setText("血量：" + String.valueOf(actualProgress));
                 }
             }
 
@@ -94,45 +98,28 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
                 sendCurrentState();
             }
         });
-
-        etHealthValue.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                try {
-                    int value = Integer.parseInt(s.toString());
-                    value = Math.max(MIN_PROGRESS, Math.min(value, MAX_PROGRESS));
-                    seekBar.setProgress(value / 100);
-                } catch (NumberFormatException e) {
-                    // Ignore invalid input
-                }
-            }
-        });
     }
 
     private void sendCurrentState() {
-        bluetoothComm.sendData(
-                switchSetting1.isChecked(),
-                switchSetting2.isChecked(),
-                switchSetting3.isChecked(),
-                seekBar.getProgress() * 100
-        );
+        new Thread(() -> {
+            bluetoothComm.sendData(
+                    switchSetting1.isChecked(),
+                    switchSetting2.isChecked(),
+                    switchSetting3.isChecked(),
+                    seekBar.getProgress() * 100
+            );
+        }).start();
     }
 
     // BluetoothCallback implementations
     @Override
     public void onConnected() {
-        runOnUiThread(() -> Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show());
+        handler.post(() -> Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show());
     }
 
     @Override
     public void onConnectionFailed(String error) {
-        runOnUiThread(() -> {
+        handler.post(() -> {
             Toast.makeText(this, "Connection failed: " + error, Toast.LENGTH_SHORT).show();
             finish();
         });
@@ -144,7 +131,7 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
         String[] parts = data.split(", ");
         if (parts.length < 4) return;
 
-        runOnUiThread(() -> {
+        handler.post(() -> {
             switchSetting1.setChecked(parts[0].contains("开启"));
             switchSetting2.setChecked(parts[1].contains("蓝色"));
             switchSetting3.setChecked(parts[2].contains("顺时针"));
@@ -156,12 +143,14 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
 
     @Override
     public void onError(String error) {
-        runOnUiThread(() -> Toast.makeText(this, error, Toast.LENGTH_SHORT).show());
+        handler.post(() -> Toast.makeText(this, error, Toast.LENGTH_SHORT).show());
     }
 
     private void showToastAndFinish(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        finish();
+        handler.post(() -> {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            finish();
+        });
     }
 
     @Override

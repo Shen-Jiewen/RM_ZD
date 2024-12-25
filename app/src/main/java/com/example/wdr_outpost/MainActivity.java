@@ -12,6 +12,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
     private final ArrayList<String> deviceList = new ArrayList<>();
     private BluetoothDeviceAdapter adapter;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     // 指定要显示的设备名称列表
     private final List<String> deviceNameList = Arrays.asList(
@@ -91,12 +94,12 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device != null) {
                     @SuppressLint("MissingPermission") String deviceName = device.getName();
-                    // 检查设备名称是否在配置列表中
-                    if (deviceName != null && deviceNameList.contains(deviceName)) {
+                    // 移除对设备名称的过滤，显示所有设备
+                    if (deviceName != null) {
                         @SuppressLint("MissingPermission") String deviceInfo = device.getName() + " [Classic]\n" + device.getAddress();
                         if (!deviceList.contains(deviceInfo)) {
                             deviceList.add(deviceInfo);
-                            adapter.notifyItemInserted(deviceList.size() - 1); // 通知插入新项
+                            handler.post(() -> adapter.notifyItemInserted(deviceList.size() - 1)); // 通知插入新项
                         }
                     }
                 }
@@ -230,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 通知适配器删除所有项
         if (previousSize > 0) {
-            adapter.notifyItemRangeRemoved(0, previousSize);
+            handler.post(() -> adapter.notifyItemRangeRemoved(0, previousSize));
         }
 
         // 注册经典蓝牙广播接收器
@@ -244,36 +247,42 @@ public class MainActivity extends AppCompatActivity {
     // 连接经典蓝牙设备
     @SuppressLint("MissingPermission")
     private void connectClassicBluetoothDevice(String deviceMacAddress) {
-        BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceMacAddress);
-        if (device != null) {
-            // 检查设备是否已配对
-            if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                // 已配对,直接跳转到通信页面
-                if(device.getName().equals("JDY-31-SPP")){
-                    Intent intent = new Intent(MainActivity.this, OutpostDeviceActivity.class);
-                    intent.putExtra("deviceMacAddress", deviceMacAddress);
-                    startActivity(intent);
+        new Thread(() -> {
+            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceMacAddress);
+            if (device != null) {
+                // 检查设备是否已配对
+                if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                    // 只有设备名称为 JDY-31-SPP 时才跳转
+                    if (device.getName() != null && device.getName().equals("JDY-31-SPP")) {
+                        Intent intent = new Intent(MainActivity.this, OutpostDeviceActivity.class);
+                        intent.putExtra("deviceMacAddress", deviceMacAddress);
+                        startActivity(intent);
+                    } else {
+                        handler.post(() -> Toast.makeText(MainActivity.this, "设备不支持跳转", Toast.LENGTH_SHORT).show());
+                    }
+                } else {
+                    // 未配对，请求配对
+                    requestPairing(device);
                 }
             } else {
-                // 未配对，请求配对
-                requestPairing(device);
+                handler.post(() -> Toast.makeText(MainActivity.this, "无法连接经典蓝牙设备", Toast.LENGTH_SHORT).show());
             }
-        } else {
-            Toast.makeText(this, "无法连接经典蓝牙设备", Toast.LENGTH_SHORT).show();
-        }
+        }).start();
     }
 
     // 请求配对
     @SuppressLint("MissingPermission")
     private void requestPairing(BluetoothDevice device) {
-        try {
-            device.createBond();
-            Toast.makeText(this, "请求配对", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "请求配对设备: " + device.getAddress());
-        } catch (Exception e) {
-            Log.e(TAG, "配对请求失败: " + e.getMessage(), e);
-            Toast.makeText(this, "配对请求失败", Toast.LENGTH_SHORT).show();
-        }
+        new Thread(() -> {
+            try {
+                device.createBond();
+                handler.post(() -> Toast.makeText(MainActivity.this, "请求配对", Toast.LENGTH_SHORT).show());
+                Log.d(TAG, "请求配对设备: " + device.getAddress());
+            } catch (Exception e) {
+                Log.e(TAG, "配对请求失败: " + e.getMessage(), e);
+                handler.post(() -> Toast.makeText(MainActivity.this, "配对请求失败", Toast.LENGTH_SHORT).show());
+            }
+        }).start();
     }
 
     @SuppressLint("MissingPermission")

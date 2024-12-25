@@ -199,22 +199,6 @@
                 android:textColor="#000000"
                 android:textSize="24sp"/>
 
-            <!-- EditText -->
-            <EditText
-                android:id="@+id/et_health_value"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="8dp"
-                android:layout_alignTop="@id/tv_setting_name_4"
-                android:layout_alignBottom="@id/tv_setting_name_4"
-                android:text="2000"
-                android:textSize="14sp"
-                android:fontFamily="@font/custom_font"
-                android:inputType="number"
-                android:cursorVisible="false"
-                tools:ignore="HardcodedText,LabelFor,RtlHardcoded" />
-
             <!-- SeekBar -->
             <SeekBar
                 android:id="@+id/sb_setting_progress"
