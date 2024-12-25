@@ -8,4 +8,11 @@
         <item name="android:track">@drawable/custom_switch_track</item>
     </style>
 
+    <style name="CustomSwitchMaterial_rb" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/custom_thumb_color</item>
+        <item name="trackTint">@color/custom_track_color</item>
+        <item name="android:thumb">@drawable/custom_switch_thumb</item>
+        <item name="android:track">@drawable/custom_switch_track_rb</item>
+    </style>
+
 </resources>

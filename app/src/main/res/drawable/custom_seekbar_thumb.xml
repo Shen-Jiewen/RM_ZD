@@ -6,7 +6,7 @@
             <solid android:color="#3BABFF" />
             <size
                 android:width="10dp"
-                android:height="18dp" />
+                android:height="16dp" />
         </shape>
     </item>
 
@@ -17,7 +17,7 @@
             <solid android:color="#FFFFFF" />
             <size
                 android:width="10dp"
-                android:height="18dp" />
+                android:height="16dp" />
         </shape>
     </item>
 
@@ -28,7 +28,7 @@
             <solid android:color="#3BABFF" />
             <size
                 android:width="10dp"
-                android:height="18dp" />
+                android:height="16dp" />
         </shape>
     </item>
 </layer-list>

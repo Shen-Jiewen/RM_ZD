@@ -199,15 +199,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 连接经典蓝牙设备
+    @SuppressLint("MissingPermission")
     private void connectClassicBluetoothDevice(String deviceMacAddress) {
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceMacAddress);
         if (device != null) {
-            // 跳转到通信页面
-            Intent intent = new Intent(MainActivity.this, ClassicBluetoothCommunicationActivity.class);
-            intent.putExtra("deviceMacAddress", deviceMacAddress);
-            startActivity(intent);
+            // 检查设备是否已配对
+            if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                // 已配对，直接跳转到通信页面
+                Intent intent = new Intent(MainActivity.this, ClassicBluetoothCommunicationActivity.class);
+                intent.putExtra("deviceMacAddress", deviceMacAddress);
+                startActivity(intent);
+            } else {
+                // 未配对，请求配对
+                requestPairing(device);
+            }
         } else {
             Toast.makeText(this, "无法连接经典蓝牙设备", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // 请求配对
+    @SuppressLint("MissingPermission")
+    private void requestPairing(BluetoothDevice device) {
+        try {
+            device.createBond();
+            Toast.makeText(this, "请求配对", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "请求配对设备: " + device.getAddress());
+        } catch (Exception e) {
+            Log.e(TAG, "配对请求失败: " + e.getMessage(), e);
+            Toast.makeText(this, "配对请求失败", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -239,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
             return new ViewHolder(view);
         }
 
-        @SuppressLint("ClickableViewAccessibility")
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             String deviceInfo = deviceList.get(position);
@@ -252,32 +271,11 @@ public class MainActivity extends AppCompatActivity {
             holder.deviceMacAddress.setText(deviceMacAddress);
             holder.deviceType.setText(deviceType);
 
-            // 为 CardView 设置 OnTouchListener
-            holder.cardView.setOnTouchListener((v, event) -> {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        // 按下时缩小卡片
-                        v.animate().scaleX(0.95f).scaleY(0.95f).setDuration(100).start();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        // 松开时恢复卡片大小
-                        v.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                // 动画结束后触发点击逻辑
-                                if (listener != null) {
-                                    listener.onItemClick(deviceInfo);
-                                }
-                            }
-                        }).start();
-                        break;
-                    case MotionEvent.ACTION_CANCEL:
-                        // 取消时恢复卡片大小
-                        v.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
-                        break;
+            // 直接设置 OnClickListener
+            holder.cardView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onItemClick(deviceInfo);
                 }
-                return true; // 返回 true 表示事件已被处理
             });
         }
 

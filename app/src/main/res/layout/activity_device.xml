@@ -54,11 +54,12 @@
         <!-- 设备图片 -->
         <ImageView
             android:id="@+id/iv_device_image"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
             android:layout_gravity="center"
             android:scaleType="centerCrop"
-            android:src="@drawable/device_image" />
+            android:src="@drawable/qianshaozhan_img" />
 
     </androidx.cardview.widget.CardView>
 
@@ -146,7 +147,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="false"
-                style="@style/CustomSwitchMaterial"
+                style="@style/CustomSwitchMaterial_rb"
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         </LinearLayout>
@@ -181,9 +182,11 @@
                 android:layout_below="@id/tv_setting_name_3"
                 android:layout_alignStart="@id/tv_setting_name_3"
                 android:text="ON/顺时针 OFF/逆时针"
-                android:textColor="#808080"
-                android:textSize="12sp"
-                android:layout_marginEnd="8dp" />
+                android:fontFamily="@font/custom_font"
+                android:textColor="#8E8E8E"
+                android:textSize="10sp"
+                android:layout_marginEnd="8dp"
+                tools:ignore="SmallSp" />
 
             <!-- Switch -->
             <Switch
@@ -192,7 +195,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:checked="true"
+                android:checked="false"
                 style="@style/CustomSwitchMaterial"
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
 
@@ -221,35 +224,20 @@
                 android:textColor="#000000"
                 android:textSize="24sp"/>
 
-            <!-- TextInputLayout -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_setting_input_4"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignTop="@+id/tv_setting_name_4"
-                android:layout_alignBottom="@+id/tv_setting_name_4"
-                android:layout_alignParentEnd="true"
-                android:layout_marginBottom="4dp"
-                app:boxBackgroundColor="#FFFFFF"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxStrokeColor="#CCCCCC"
-                app:boxStrokeWidth="1dp"
-                app:endIconMode="none"
-                app:hintTextColor="#808080"
-                tools:ignore="RelativeOverlap">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_setting_input_4"
-                    android:layout_width="60dp"
-                    android:layout_height="match_parent"
-                    android:inputType="number"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+            <!-- EditText -->
+            <EditText
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="8dp"
+                android:layout_alignTop="@id/tv_setting_name_4"
+                android:layout_alignBottom="@id/tv_setting_name_4"
+                android:layout_marginBottom="3dp"
+                android:layout_marginTop="3dp"
+                android:text="500"
+                android:inputType="number"
+                android:cursorVisible="false"
+                tools:ignore="RtlHardcoded" />
 
             <!-- SeekBar -->
             <SeekBar
