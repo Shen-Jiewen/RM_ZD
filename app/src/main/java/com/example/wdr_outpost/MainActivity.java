@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,7 +37,10 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "BluetoothDemo"; // 日志标签
+    private static final String TAG = "MainJaven"; // 日志标签
+
+    private static final int REQUEST_CODE_BLUETOOTH_CONNECT = 1001;
+
     private BluetoothAdapter bluetoothAdapter;
     private final ArrayList<String> deviceList = new ArrayList<>();
     private BluetoothDeviceAdapter adapter;
@@ -58,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (allGranted) {
                     Toast.makeText(this, "权限已授予", Toast.LENGTH_SHORT).show();
+                    // 权限已授予，开始扫描设备
+                    scanDevices();
                 } else {
                     Toast.makeText(this, "权限被拒绝，无法扫描设备", Toast.LENGTH_SHORT).show();
                 }
@@ -144,16 +151,13 @@ public class MainActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(adapter);
 
-        // 检查并请求蓝牙权限
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions();
-        }
-
         // 扫描按钮点击事件
         scanButton.setOnClickListener(v -> {
             if (bluetoothAdapter.isEnabled()) {
-                scanDevices();
+                // 检查权限
+                if (checkPermissions()) {
+                    scanDevices();
+                }
             } else {
                 // 如果蓝牙未启用，请求用户启用蓝牙
                 requestEnableBluetooth();
@@ -161,19 +165,60 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // 请求权限
-    private void requestPermissions() {
+    // 检查并请求权限
+    private boolean checkPermissions() {
         String[] permissions = new String[]{
                 Manifest.permission.BLUETOOTH_SCAN,
                 Manifest.permission.ACCESS_FINE_LOCATION
         };
-        requestPermissionLauncher.launch(permissions);
+
+        boolean allGranted = true;
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                allGranted = false;
+                break;
+            }
+        }
+
+        if (!allGranted) {
+            requestPermissionLauncher.launch(permissions);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     // 请求启用蓝牙
+    @SuppressLint("ObsoleteSdkInt")
     private void requestEnableBluetooth() {
+        // 检查 Android 版本
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Android 12 及以上版本，需要 BLUETOOTH_CONNECT 权限
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                // 请求 BLUETOOTH_CONNECT 权限
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_CODE_BLUETOOTH_CONNECT);
+                return; // 等待权限请求结果
+            }
+        }
+
+        // 权限已授予或不需要权限，启动蓝牙启用请求
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         enableBluetoothLauncher.launch(enableBtIntent);
+    }
+
+    // 处理权限请求结果
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_BLUETOOTH_CONNECT) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 权限已授予，启动蓝牙启用请求
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                enableBluetoothLauncher.launch(enableBtIntent);
+            } else {
+                Toast.makeText(this, "BLUETOOTH_CONNECT 权限被拒绝，无法启用蓝牙", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     // 扫描蓝牙设备
@@ -203,10 +248,12 @@ public class MainActivity extends AppCompatActivity {
         if (device != null) {
             // 检查设备是否已配对
             if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                // 已配对，直接跳转到通信页面
-                Intent intent = new Intent(MainActivity.this, ClassicBluetoothCommunicationActivity.class);
-                intent.putExtra("deviceMacAddress", deviceMacAddress);
-                startActivity(intent);
+                // 已配对,直接跳转到通信页面
+                if(device.getName().equals("JDY-31-SPP")){
+                    Intent intent = new Intent(MainActivity.this, OutpostDeviceActivity.class);
+                    intent.putExtra("deviceMacAddress", deviceMacAddress);
+                    startActivity(intent);
+                }
             } else {
                 // 未配对，请求配对
                 requestPairing(device);

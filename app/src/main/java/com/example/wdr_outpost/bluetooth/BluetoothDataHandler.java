@@ -1,4 +1,4 @@
-package com.example.wdr_outpost;
+package com.example.wdr_outpost.bluetooth;
 
 public interface BluetoothDataHandler {
     void sendData(boolean isOn, boolean isBlue, boolean isClockwise, int health);
