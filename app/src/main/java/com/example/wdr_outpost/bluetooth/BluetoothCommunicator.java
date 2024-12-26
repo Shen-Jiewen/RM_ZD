@@ -29,15 +29,15 @@ public class BluetoothCommunicator {
     public void connect(BluetoothDevice device) {
         try {
             bluetoothSocket = device.createRfcommSocketToServiceRecord(DEFAULT_UUID);
-            Log.d(TAG, "Attempting to connect: " + device.getAddress());
+            Log.d(TAG, "尝试连接: " + device.getAddress());
             bluetoothSocket.connect();
             inputStream = bluetoothSocket.getInputStream();
             outputStream = bluetoothSocket.getOutputStream();
             callback.onConnected();
             startReceiving();
         } catch (IOException e) {
-            Log.e(TAG, "Connection failed: " + e.getMessage());
-            callback.onConnectionFailed(e.getMessage());
+            Log.e(TAG, "连接失败: " + e.getMessage());
+            callback.onConnectionFailed("连接失败: " + e.getMessage());
         }
     }
 
@@ -45,10 +45,10 @@ public class BluetoothCommunicator {
         try {
             byte[] frame = buildFrame(isOn, isBlue, isClockwise, health);
             outputStream.write(frame);
-            Log.d(TAG, "Data sent: " + bytesToHex(frame));
+            Log.d(TAG, "数据已发送: " + bytesToHex(frame));
         } catch (IOException e) {
-            Log.e(TAG, "Send failed: " + e.getMessage());
-            callback.onError("Send failed: " + e.getMessage());
+            Log.e(TAG, "发送失败: " + e.getMessage());
+            callback.onError("发送失败: " + e.getMessage());
         }
     }
 
@@ -64,8 +64,8 @@ public class BluetoothCommunicator {
                     }
                 } catch (IOException e) {
                     if (!Thread.currentThread().isInterrupted()) {
-                        Log.e(TAG, "Receive error: " + e.getMessage());
-                        callback.onError("Receive error: " + e.getMessage());
+                        Log.e(TAG, "接收错误: " + e.getMessage());
+                        callback.onError("接收错误: " + e.getMessage());
                     }
                     break;
                 }
@@ -93,7 +93,7 @@ public class BluetoothCommunicator {
     @SuppressLint("DefaultLocale")
     private String parseFrame(byte[] buffer, int length) {
         if (length < 6 || buffer[0] != (byte) 0xAA || buffer[length - 1] != (byte) 0x55) {
-            return "Invalid frame";
+            return "无效帧";
         }
 
         int statusByte = buffer[1] & 0xFF;
@@ -121,7 +121,7 @@ public class BluetoothCommunicator {
                 bluetoothSocket.close();
             }
         } catch (IOException e) {
-            Log.e(TAG, "Disconnect error: " + e.getMessage());
+            Log.e(TAG, "断开连接错误: " + e.getMessage());
         }
     }
 

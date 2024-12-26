@@ -52,13 +52,13 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
         new Thread(() -> {
             BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             if (bluetoothManager == null || bluetoothManager.getAdapter() == null) {
-                handler.post(() -> showToastAndFinish("Bluetooth not available"));
+                handler.post(() -> showToastAndFinish("蓝牙不可用"));
                 return;
             }
 
             String deviceAddress = getIntent().getStringExtra("deviceMacAddress");
             if (deviceAddress == null) {
-                handler.post(() -> showToastAndFinish("No device address provided"));
+                handler.post(() -> showToastAndFinish("未提供设备地址"));
                 return;
             }
 
@@ -86,7 +86,7 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
                         actualProgress = MAX_PROGRESS;
                         seekBar.setProgress(MAX_PROGRESS / 100);
                     }
-                    etHealthValue.setText("血量：" + String.valueOf(actualProgress));
+                    etHealthValue.setText("血量：" + actualProgress);
                 }
             }
 
@@ -101,26 +101,24 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
     }
 
     private void sendCurrentState() {
-        new Thread(() -> {
-            bluetoothComm.sendData(
-                    switchSetting1.isChecked(),
-                    switchSetting2.isChecked(),
-                    switchSetting3.isChecked(),
-                    seekBar.getProgress() * 100
-            );
-        }).start();
+        new Thread(() -> bluetoothComm.sendData(
+                switchSetting1.isChecked(),
+                switchSetting2.isChecked(),
+                switchSetting3.isChecked(),
+                seekBar.getProgress() * 100
+        )).start();
     }
 
     // BluetoothCallback implementations
     @Override
     public void onConnected() {
-        handler.post(() -> Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show());
+        handler.post(() -> Toast.makeText(this, "已连接", Toast.LENGTH_SHORT).show());
     }
 
     @Override
     public void onConnectionFailed(String error) {
         handler.post(() -> {
-            Toast.makeText(this, "Connection failed: " + error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "连接失败: " + error, Toast.LENGTH_SHORT).show();
             finish();
         });
     }
