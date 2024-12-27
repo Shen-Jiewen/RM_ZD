@@ -30,45 +30,71 @@ public class BluetoothCommunicator {
         this.callback = callback;
     }
 
+    /**
+     * 连接到指定的蓝牙设备。
+     *
+     * @param device 要连接的蓝牙设备。
+     */
     @SuppressLint("MissingPermission")
     public void connect(BluetoothDevice device) {
+        if (device == null) {
+            callback.onConnectionFailed("设备为空，无法连接");
+            return;
+        }
+
         try {
             bluetoothSocket = device.createRfcommSocketToServiceRecord(DEFAULT_UUID);
-            Log.d(TAG, "尝试连接: " + device.getAddress());
             bluetoothSocket.connect();
             inputStream = bluetoothSocket.getInputStream();
             outputStream = bluetoothSocket.getOutputStream();
             callback.onConnected();
             startReceiving();
         } catch (IOException e) {
-            Log.e(TAG, "连接失败: " + e.getMessage());
             callback.onConnectionFailed("连接失败: " + e.getMessage());
         }
     }
 
+    /**
+     * 发送数据到连接的蓝牙设备。
+     *
+     * @param isOn        设备是否开启。
+     * @param isBlue      设备是否为蓝色。
+     * @param isClockwise 设备是否顺时针旋转。
+     * @param health      设备的血量。
+     */
     public void sendData(boolean isOn, boolean isBlue, boolean isClockwise, int health) {
+        if (outputStream == null) {
+            callback.onError("正在连接...");
+            return;
+        }
+
         try {
             byte[] frame = buildFrame(isOn, isBlue, isClockwise, health);
             outputStream.write(frame);
-            Log.d(TAG, "数据已发送: " + bytesToHex(frame));
         } catch (IOException e) {
-            Log.e(TAG, "发送失败: " + e.getMessage());
             callback.onError("发送失败: " + e.getMessage());
         }
     }
 
+    /**
+     * 启动接收数据的线程。
+     */
     private void startReceiving() {
+        if (inputStream == null) {
+            callback.onError("输入流为空，无法启动接收线程");
+            return;
+        }
+
         receiveThread = new Thread(() -> {
             byte[] buffer = new byte[1024];
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     int bytes = inputStream.read(buffer);
                     if (bytes > 0) {
-                        processReceivedData(buffer, bytes); // 处理接收到的数据
+                        processReceivedData(buffer, bytes);
                     }
                 } catch (IOException e) {
                     if (!Thread.currentThread().isInterrupted()) {
-                        Log.e(TAG, "接收错误: " + e.getMessage());
                         callback.onError("接收错误: " + e.getMessage());
                     }
                     break;
@@ -79,15 +105,18 @@ public class BluetoothCommunicator {
     }
 
     /**
-     * 处理接收到的数据，解决粘包问题
+     * 处理接收到的数据，解决粘包问题。
      *
-     * @param data   新接收到的数据
-     * @param length 新接收到的数据长度
+     * @param data   新接收到的数据。
+     * @param length 新接收到的数据长度。
      */
     private void processReceivedData(byte[] data, int length) {
+        if (data == null || length <= 0) {
+            return;
+        }
+
         // 将新数据追加到缓冲区
         if (bufferLength + length > receiveBuffer.length) {
-            // 如果缓冲区不够大，扩容缓冲区
             receiveBuffer = Arrays.copyOf(receiveBuffer, bufferLength + length);
         }
         System.arraycopy(data, 0, receiveBuffer, bufferLength, length);
@@ -95,41 +124,45 @@ public class BluetoothCommunicator {
 
         // 解析缓冲区中的数据帧
         int startIndex = 0;
-        while (startIndex + 6 <= bufferLength) { // 至少需要 6 个字节才能构成一帧
-            // 查找帧头 (0xAA)
+        while (startIndex + 6 <= bufferLength) {
             if (receiveBuffer[startIndex] != (byte) 0xAA) {
                 startIndex++;
                 continue;
             }
 
-            // 查找帧尾 (0x55)
             int endIndex = startIndex + 1;
             while (endIndex < bufferLength && receiveBuffer[endIndex] != (byte) 0x55) {
                 endIndex++;
             }
 
-            // 如果找到完整的帧
             if (endIndex < bufferLength && receiveBuffer[endIndex] == (byte) 0x55) {
                 int frameLength = endIndex - startIndex + 1;
-                if (frameLength >= 6) { // 确保帧长度至少为 6
+                if (frameLength >= 6) {
                     byte[] frame = Arrays.copyOfRange(receiveBuffer, startIndex, startIndex + frameLength);
                     String result = parseFrame(frame, frameLength);
-                    Log.d(TAG, "解析结果: " + result);
                     callback.onDataReceived(result);
 
-                    // 移动缓冲区，移除已处理的数据
                     System.arraycopy(receiveBuffer, startIndex + frameLength, receiveBuffer, 0, bufferLength - (startIndex + frameLength));
                     bufferLength -= (startIndex + frameLength);
-                    startIndex = 0; // 重置起始位置
+                    startIndex = 0;
                 } else {
                     startIndex++;
                 }
             } else {
-                break; // 未找到完整的帧，退出循环
+                break;
             }
         }
     }
 
+    /**
+     * 构建要发送的数据帧。
+     *
+     * @param isOn        设备是否开启。
+     * @param isBlue      设备是否为蓝色。
+     * @param isClockwise 设备是否顺时针旋转。
+     * @param health      设备的血量。
+     * @return 构建好的数据帧。
+     */
     private byte[] buildFrame(boolean isOn, boolean isBlue, boolean isClockwise, int health) {
         int statusByte = ((isOn ? 1 : 0) << 3) | ((isBlue ? 1 : 0) << 2) | ((isClockwise ? 1 : 0) << 1);
         int healthHighByte = (health >> 8) & 0xFF;
@@ -146,32 +179,31 @@ public class BluetoothCommunicator {
         return frame.toByteArray();
     }
 
-    @SuppressLint("DefaultLocale")
+    /**
+     * 解析接收到的数据帧。
+     *
+     * @param buffer 接收到的数据帧。
+     * @param length 数据帧的长度。
+     * @return 解析后的结果字符串。
+     */
     private String parseFrame(byte[] buffer, int length) {
-        // 将 buffer 内容以十六进制格式输出到日志
-        StringBuilder hexBuffer = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            hexBuffer.append(String.format("%02X ", buffer[i])); // 每个字节转换为两位十六进制，用空格分隔
+        if (buffer == null || length <= 0) {
+            return "无效帧";
         }
-        Log.d(TAG, "接收到数据 (Hex): " + hexBuffer.toString().trim());
 
-        // 检查帧的有效性
         if (length < 6 || buffer[0] != (byte) 0xAA || buffer[length - 1] != (byte) 0x55) {
             return "无效帧";
         }
 
-        // 解析状态字节
         int statusByte = buffer[1] & 0xFF;
         boolean isOn = ((statusByte >> 3) & 0x01) == 1;
         boolean isBlue = ((statusByte >> 2) & 0x01) == 1;
         boolean isClockwise = ((statusByte >> 1) & 0x01) == 1;
 
-        // 解析血量
         int healthHighByte = buffer[2] & 0xFF;
         int healthLowByte = buffer[3] & 0xFF;
         int health = (healthHighByte << 8) | healthLowByte;
 
-        // 返回解析结果
         return String.format("开启状态: %s, 颜色: %s, 旋转方向: %s, 血量: %d",
                 isOn ? "开启" : "关闭",
                 isBlue ? "蓝色" : "红色",
@@ -179,6 +211,9 @@ public class BluetoothCommunicator {
                 health);
     }
 
+    /**
+     * 断开蓝牙连接。
+     */
     public void disconnect() {
         if (receiveThread != null) {
             receiveThread.interrupt();
@@ -192,7 +227,17 @@ public class BluetoothCommunicator {
         }
     }
 
+    /**
+     * 将字节数组转换为十六进制字符串。
+     *
+     * @param bytes 要转换的字节数组。
+     * @return 转换后的十六进制字符串。
+     */
     private String bytesToHex(byte[] bytes) {
+        if (bytes == null) {
+            return "字节数组为空";
+        }
+
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
             sb.append(String.format("%02X ", b));
@@ -200,6 +245,9 @@ public class BluetoothCommunicator {
         return sb.toString();
     }
 
+    /**
+     * 蓝牙通信回调接口。
+     */
     public interface BluetoothCallback {
         void onConnected();
         void onConnectionFailed(String error);
