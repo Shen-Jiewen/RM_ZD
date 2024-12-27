@@ -75,38 +75,16 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
     }
 
     private void setupListeners() {
-        // 设置 Switch 的监听器
         if (outpostSwitchSetting1 != null) {
-            outpostSwitchSetting1.setOnCheckedChangeListener((v, checked) -> {
-                if (bluetoothComm != null) {
-                    sendCurrentState();
-                } else {
-                    Toast.makeText(this, "蓝牙通信未初始化", Toast.LENGTH_SHORT).show();
-                }
-            });
+            outpostSwitchSetting1.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
         }
-
         if (outpostSwitchSetting2 != null) {
-            outpostSwitchSetting2.setOnCheckedChangeListener((v, checked) -> {
-                if (bluetoothComm != null) {
-                    sendCurrentState();
-                } else {
-                    Toast.makeText(this, "蓝牙通信未初始化", Toast.LENGTH_SHORT).show();
-                }
-            });
+            outpostSwitchSetting2.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
         }
-
         if (outpostSwitchSetting3 != null) {
-            outpostSwitchSetting3.setOnCheckedChangeListener((v, checked) -> {
-                if (bluetoothComm != null) {
-                    sendCurrentState();
-                } else {
-                    Toast.makeText(this, "蓝牙通信未初始化", Toast.LENGTH_SHORT).show();
-                }
-            });
+            outpostSwitchSetting3.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
         }
 
-        // 设置 SeekBar 的监听器
         if (outpostSeekBar != null) {
             outpostSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @SuppressLint("SetTextI18n")
@@ -132,11 +110,7 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    if (bluetoothComm != null) {
-                        sendCurrentState();
-                    } else {
-                        Toast.makeText(OutpostDeviceActivity.this, "蓝牙通信未初始化", Toast.LENGTH_SHORT).show();
-                    }
+                    sendCurrentState();
                 }
             });
         }
@@ -172,6 +146,7 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
         });
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onDataReceived(String data) {
         if (data == null || data.isEmpty()) {
@@ -187,7 +162,7 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
 
         handler.post(() -> {
             if (outpostSwitchSetting1 != null) {
-                outpostSwitchSetting1.setChecked(parts[0].contains("开启"));
+                outpostSwitchSetting1.setChecked(!parts[0].contains("开启"));
             }
             if (outpostSwitchSetting2 != null) {
                 outpostSwitchSetting2.setChecked(parts[1].contains("蓝色"));
@@ -199,7 +174,7 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
                 try {
                     int health = Integer.parseInt(parts[3].split(": ")[1]);
                     outpostSeekBar.setProgress(health / 100);
-                    outpostEtHealthValue.setText(String.valueOf(health));
+                    outpostEtHealthValue.setText("血量：" + health);
                 } catch (NumberFormatException e) {
                     Toast.makeText(this, "解析血量数据失败", Toast.LENGTH_SHORT).show();
                 }
