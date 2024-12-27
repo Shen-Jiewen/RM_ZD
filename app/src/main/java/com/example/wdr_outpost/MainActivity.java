@@ -39,13 +39,13 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainJaven"; // 日志标签
-
     private static final int REQUEST_CODE_BLUETOOTH_CONNECT = 1001;
 
     private BluetoothAdapter bluetoothAdapter;
     private final ArrayList<String> deviceList = new ArrayList<>();
     private BluetoothDeviceAdapter adapter;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private boolean isReceiverRegistered = false; // 新增标志位
 
     // Activity Result API 用于请求权限
     private final ActivityResultLauncher<String[]> requestPermissionLauncher =
@@ -92,10 +92,12 @@ public class MainActivity extends AppCompatActivity {
                         // 移除对设备名称的过滤，显示所有设备
                         if (deviceName != null) {
                             @SuppressLint("MissingPermission") String deviceInfo = device.getName() + " [Classic]\n" + device.getAddress();
-                            if (!deviceList.contains(deviceInfo)) {
-                                deviceList.add(deviceInfo);
-                                handler.post(() -> adapter.notifyItemInserted(deviceList.size() - 1)); // 通知插入新项
-                            }
+                            handler.post(() -> {
+                                if (!deviceList.contains(deviceInfo)) {
+                                    deviceList.add(deviceInfo);
+                                    adapter.notifyItemInserted(deviceList.size() - 1); // 通知插入新项
+                                }
+                            });
                         }
                     } else {
                         Log.e(TAG, "缺少 BLUETOOTH_CONNECT 权限，无法获取设备名称");
@@ -247,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
         // 注册经典蓝牙广播接收器
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(classicBluetoothReceiver, filter);
+        isReceiverRegistered = true; // 更新标志位
 
         // 开始经典蓝牙扫描
         bluetoothAdapter.startDiscovery();
@@ -302,10 +305,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // 停止经典蓝牙扫描
-        bluetoothAdapter.cancelDiscovery();
-        // 取消注册经典蓝牙广播接收器
-        unregisterReceiver(classicBluetoothReceiver);
+        // 检查是否具有 BLUETOOTH_SCAN 权限
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+            // 停止经典蓝牙扫描
+            bluetoothAdapter.cancelDiscovery();
+        } else {
+            Log.e(TAG, "缺少 BLUETOOTH_SCAN 权限，无法停止蓝牙扫描");
+        }
+
+        // 检查广播接收器是否已注册
+        if (isReceiverRegistered) {
+            // 取消注册经典蓝牙广播接收器
+            unregisterReceiver(classicBluetoothReceiver);
+            isReceiverRegistered = false; // 更新标志位
+        }
     }
 
     // 适配器类
