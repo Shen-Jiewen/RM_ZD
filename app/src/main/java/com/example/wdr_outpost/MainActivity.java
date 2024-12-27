@@ -86,14 +86,19 @@ public class MainActivity extends AppCompatActivity {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device != null) {
-                    @SuppressLint("MissingPermission") String deviceName = device.getName();
-                    // 移除对设备名称的过滤，显示所有设备
-                    if (deviceName != null) {
-                        @SuppressLint("MissingPermission") String deviceInfo = device.getName() + " [Classic]\n" + device.getAddress();
-                        if (!deviceList.contains(deviceInfo)) {
-                            deviceList.add(deviceInfo);
-                            handler.post(() -> adapter.notifyItemInserted(deviceList.size() - 1)); // 通知插入新项
+                    // 检查是否具有 BLUETOOTH_CONNECT 权限
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                        @SuppressLint("MissingPermission") String deviceName = device.getName();
+                        // 移除对设备名称的过滤，显示所有设备
+                        if (deviceName != null) {
+                            @SuppressLint("MissingPermission") String deviceInfo = device.getName() + " [Classic]\n" + device.getAddress();
+                            if (!deviceList.contains(deviceInfo)) {
+                                deviceList.add(deviceInfo);
+                                handler.post(() -> adapter.notifyItemInserted(deviceList.size() - 1)); // 通知插入新项
+                            }
                         }
+                    } else {
+                        Log.e(TAG, "缺少 BLUETOOTH_CONNECT 权限，无法获取设备名称");
                     }
                 }
             }
@@ -162,11 +167,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 检查并请求权限
+    @SuppressLint("ObsoleteSdkInt")
     private boolean checkPermissions() {
-        String[] permissions = new String[]{
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.ACCESS_FINE_LOCATION
-        };
+        String[] permissions;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissions = new String[]{
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            };
+        } else {
+            permissions = new String[]{
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            };
+        }
 
         boolean allGranted = true;
         for (String permission : permissions) {
@@ -241,24 +256,29 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     private void connectClassicBluetoothDevice(String deviceMacAddress) {
         new Thread(() -> {
-            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceMacAddress);
-            if (device != null) {
-                // 检查设备是否已配对
-                if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                    // 只有设备名称为 OUTPOST 时才跳转
-                    if (device.getName() != null && device.getName().equals("OUTPOST")) {
-                        Intent intent = new Intent(MainActivity.this, OutpostDeviceActivity.class);
-                        intent.putExtra("deviceMacAddress", deviceMacAddress);
-                        startActivity(intent);
+            // 检查是否具有 BLUETOOTH_CONNECT 权限
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceMacAddress);
+                if (device != null) {
+                    // 检查设备是否已配对
+                    if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                        // 只有设备名称为 OUTPOST 时才跳转
+                        if (device.getName() != null && device.getName().equals("OUTPOST")) {
+                            Intent intent = new Intent(MainActivity.this, OutpostDeviceActivity.class);
+                            intent.putExtra("deviceMacAddress", deviceMacAddress);
+                            startActivity(intent);
+                        } else {
+                            handler.post(() -> Toast.makeText(MainActivity.this, "设备不支持跳转", Toast.LENGTH_SHORT).show());
+                        }
                     } else {
-                        handler.post(() -> Toast.makeText(MainActivity.this, "设备不支持跳转", Toast.LENGTH_SHORT).show());
+                        // 未配对，请求配对
+                        requestPairing(device);
                     }
                 } else {
-                    // 未配对，请求配对
-                    requestPairing(device);
+                    handler.post(() -> Toast.makeText(MainActivity.this, "无法连接经典蓝牙设备", Toast.LENGTH_SHORT).show());
                 }
             } else {
-                handler.post(() -> Toast.makeText(MainActivity.this, "无法连接经典蓝牙设备", Toast.LENGTH_SHORT).show());
+                Log.e(TAG, "缺少 BLUETOOTH_CONNECT 权限，无法连接设备");
             }
         }).start();
     }
