@@ -8,7 +8,7 @@
 
     <!-- 标题栏 -->
     <RelativeLayout
-        android:id="@+id/rl_title_bar"
+        android:id="@+id/outpost_rl_title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
@@ -16,7 +16,7 @@
 
         <!-- 返回按键 -->
         <ImageView
-            android:id="@+id/iv_back"
+            android:id="@+id/outpost_iv_back"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/ic_back"
@@ -27,7 +27,7 @@
 
         <!-- 设备名称 -->
         <TextView
-            android:id="@+id/tv_device_name"
+            android:id="@+id/outpost_tv_device_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="前哨站"
@@ -38,36 +38,11 @@
 
     </RelativeLayout>
 
-    <!-- 设备信息卡片 -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cv_device_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/rl_title_bar"
-        android:layout_marginTop="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:backgroundTint="@color/white"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp">
-
-        <!-- 设备图片 -->
-        <ImageView
-            android:id="@+id/iv_device_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:src="@drawable/device_image1" />
-
-    </androidx.cardview.widget.CardView>
-
     <TextView
-        android:id="@+id/tv_status_set"
+        android:id="@+id/outpost_tv_status_set"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/cv_device_info"
+        android:layout_below="@+id/outpost_rl_title_bar"
         android:layout_marginTop="20dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
@@ -79,17 +54,17 @@
 
     <!-- 设置列表 -->
     <RelativeLayout
-        android:id="@+id/rl_settings_list"
+        android:id="@+id/outpost_rl_settings_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_status_set"
+        android:layout_below="@id/outpost_tv_status_set"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp">
 
         <!-- 设置项1 -->
         <LinearLayout
-            android:id="@+id/ll_setting_item_1"
+            android:id="@+id/outpost_ll_setting_item_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -98,7 +73,7 @@
             android:padding="10dp">
 
             <TextView
-                android:id="@+id/tv_setting_name_1"
+                android:id="@+id/outpost_tv_setting_name_1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -110,7 +85,7 @@
                 android:textSize="24sp" />
 
             <Switch
-                android:id="@+id/sw_setting_1"
+                android:id="@+id/outpost_sw_setting_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="false"
@@ -121,17 +96,17 @@
 
         <!-- 设置项2 -->
         <LinearLayout
-            android:id="@+id/ll_setting_item_2"
+            android:id="@+id/outpost_ll_setting_item_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/ll_setting_item_1"
+            android:layout_below="@id/outpost_ll_setting_item_1"
             android:layout_marginBottom="8dp"
             android:background="@drawable/rounded_background"
             android:orientation="horizontal"
             android:padding="10dp">
 
             <TextView
-                android:id="@+id/tv_setting_name_2"
+                android:id="@+id/outpost_tv_setting_name_2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -143,7 +118,7 @@
                 android:textSize="24sp" />
 
             <Switch
-                android:id="@+id/sw_setting_2"
+                android:id="@+id/outpost_sw_setting_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="false"
@@ -154,17 +129,17 @@
 
         <!-- 设置项3 -->
         <RelativeLayout
-            android:id="@+id/rl_setting_item_3"
+            android:id="@+id/outpost_rl_setting_item_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/ll_setting_item_2"
+            android:layout_below="@id/outpost_ll_setting_item_2"
             android:layout_marginBottom="8dp"
             android:background="@drawable/rounded_background"
             android:padding="10dp">
 
             <!-- 设置名称 -->
             <TextView
-                android:id="@+id/tv_setting_name_3"
+                android:id="@+id/outpost_tv_setting_name_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -176,11 +151,11 @@
 
             <!-- 提示文本 -->
             <TextView
-                android:id="@+id/tv_setting_hint_3"
+                android:id="@+id/outpost_tv_setting_hint_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_setting_name_3"
-                android:layout_alignStart="@id/tv_setting_name_3"
+                android:layout_below="@id/outpost_tv_setting_name_3"
+                android:layout_alignStart="@id/outpost_tv_setting_name_3"
                 android:text="ON/顺时针 OFF/逆时针"
                 android:fontFamily="@font/custom_font"
                 android:textColor="#8E8E8E"
@@ -190,7 +165,7 @@
 
             <!-- Switch -->
             <Switch
-                android:id="@+id/sw_setting_3"
+                android:id="@+id/outpost_sw_setting_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -201,35 +176,34 @@
 
         </RelativeLayout>
 
-
         <!-- 设置项4 -->
         <RelativeLayout
-            android:id="@+id/rl_setting_item_4"
+            android:id="@+id/outpost_rl_setting_item_4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/rl_setting_item_3"
+            android:layout_below="@id/outpost_rl_setting_item_3"
             android:layout_marginBottom="8dp"
             android:background="@drawable/rounded_background"
             android:padding="10dp">
 
             <!-- 设置名称 -->
             <TextView
-                android:id="@+id/tv_setting_name_4"
+                android:id="@+id/outpost_tv_setting_name_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_marginStart="8dp"
-                android:text="血量：2000"
+                android:text="血量"
                 android:fontFamily="@font/custom_font"
                 android:textColor="#000000"
                 android:textSize="24sp"/>
 
             <!-- SeekBar -->
             <SeekBar
-                android:id="@+id/sb_setting_progress"
+                android:id="@+id/outpost_sb_setting_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_setting_name_4"
+                android:layout_below="@id/outpost_tv_setting_name_4"
                 android:layout_marginTop="10dp"
                 android:max="50"
                 android:progress="20"

@@ -1,21 +1,44 @@
 [versions]
 agp = "8.7.3"
+androidxJunit = "1.1.3"
+appcompatVersion = "1.4.1"
+cardview = "1.0.0"
+constraintlayoutVersion = "2.1.3"
+espressoCoreVersion = "3.4.0"
+googleMaterial = "1.12.0"
+googleMaterialVersion = "1.4.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
+localbroadcastmanager = "1.1.0"
 material = "1.10.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
+materialVersion = "1.9.0"
+mpandroidchart = "v3.1.0"
+recyclerview = "1.3.2"
 
 [libraries]
+#noinspection SimilarGradleDependency
+appcompat-v141 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
+cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
+constraintlayout-v213 = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayoutVersion" }
+espresso-core-v340 = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+junit-v113 = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
+localbroadcastmanager = { module = "androidx.localbroadcastmanager:localbroadcastmanager", version.ref = "localbroadcastmanager" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+material-v1120 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
+material-v140 = { module = "com.google.android.material:material", version.ref = "googleMaterialVersion" }
+material-v190 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
+recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

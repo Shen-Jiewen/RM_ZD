@@ -81,19 +81,19 @@ public class BluetoothCommunicator {
         int checksum = (statusByte + healthHighByte + healthLowByte) & 0xFF;
 
         ByteArrayOutputStream frame = new ByteArrayOutputStream();
-        frame.write(0xAA); // Header
+        frame.write(0xAA);
         frame.write(statusByte);
         frame.write(healthHighByte);
         frame.write(healthLowByte);
         frame.write(checksum);
-        frame.write(0x55); // Footer
+        frame.write(0x55);
         return frame.toByteArray();
     }
 
     @SuppressLint("DefaultLocale")
     private String parseFrame(byte[] buffer, int length) {
         if (length < 6 || buffer[0] != (byte) 0xAA || buffer[length - 1] != (byte) 0x55) {
-            return "无效帧";
+            return "无效帧"; 
         }
 
         int statusByte = buffer[1] & 0xFF;

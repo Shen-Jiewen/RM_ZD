@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -47,12 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private final ArrayList<String> deviceList = new ArrayList<>();
     private BluetoothDeviceAdapter adapter;
     private final Handler handler = new Handler(Looper.getMainLooper());
-
-    // 指定要显示的设备名称列表
-    private final List<String> deviceNameList = Arrays.asList(
-            "Javen_m",
-            "JDY-31-SPP"
-    );
 
     // Activity Result API 用于请求权限
     private final ActivityResultLauncher<String[]> requestPermissionLauncher =
@@ -252,8 +245,8 @@ public class MainActivity extends AppCompatActivity {
             if (device != null) {
                 // 检查设备是否已配对
                 if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                    // 只有设备名称为 JDY-31-SPP 时才跳转
-                    if (device.getName() != null && device.getName().equals("JDY-31-SPP")) {
+                    // 只有设备名称为 OUTPOST 时才跳转
+                    if (device.getName() != null && device.getName().equals("OUTPOST")) {
                         Intent intent = new Intent(MainActivity.this, OutpostDeviceActivity.class);
                         intent.putExtra("deviceMacAddress", deviceMacAddress);
                         startActivity(intent);

@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
 
-        <!-- 经典蓝牙通信页面 -->
+        <!-- 前哨站控制页面 -->
         <activity
             android:name=".OutpostDeviceActivity"
             android:exported="true" />

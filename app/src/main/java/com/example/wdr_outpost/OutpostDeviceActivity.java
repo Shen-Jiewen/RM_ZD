@@ -21,16 +21,16 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
     private static final int MAX_PROGRESS = 5000;
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    private Switch switchSetting1, switchSetting2, switchSetting3;
-    private SeekBar seekBar;
-    private TextView etHealthValue;
+    private Switch outpostSwitchSetting1, outpostSwitchSetting2, outpostSwitchSetting3;
+    private SeekBar outpostSeekBar;
+    private TextView outpostEtHealthValue;
     private BluetoothCommunicator bluetoothComm;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_device);
+        setContentView(R.layout.activity_outpost);
 
         initializeUI();
         initializeBluetooth();
@@ -38,14 +38,14 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
     }
 
     private void initializeUI() {
-        switchSetting1 = findViewById(R.id.sw_setting_1);
-        switchSetting2 = findViewById(R.id.sw_setting_2);
-        switchSetting3 = findViewById(R.id.sw_setting_3);
-        seekBar = findViewById(R.id.sb_setting_progress);
-        etHealthValue = findViewById(R.id.tv_setting_name_4);
+        outpostSwitchSetting1 = findViewById(R.id.outpost_sw_setting_1);
+        outpostSwitchSetting2 = findViewById(R.id.outpost_sw_setting_2);
+        outpostSwitchSetting3 = findViewById(R.id.outpost_sw_setting_3);
+        outpostSeekBar = findViewById(R.id.outpost_sb_setting_progress);
+        outpostEtHealthValue = findViewById(R.id.outpost_tv_setting_name_4);
 
-        ImageView ivBack = findViewById(R.id.iv_back);
-        ivBack.setOnClickListener(v -> finish());
+        ImageView outpostIvBack = findViewById(R.id.outpost_iv_back);
+        outpostIvBack.setOnClickListener(v -> finish());
     }
 
     private void initializeBluetooth() {
@@ -69,11 +69,11 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
     }
 
     private void setupListeners() {
-        switchSetting1.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
-        switchSetting2.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
-        switchSetting3.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
+        outpostSwitchSetting1.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
+        outpostSwitchSetting2.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
+        outpostSwitchSetting3.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        outpostSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -86,7 +86,7 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
                         actualProgress = MAX_PROGRESS;
                         seekBar.setProgress(MAX_PROGRESS / 100);
                     }
-                    etHealthValue.setText("血量：" + actualProgress);
+                    outpostEtHealthValue.setText("血量：" + actualProgress);
                 }
             }
 
@@ -102,10 +102,10 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
 
     private void sendCurrentState() {
         new Thread(() -> bluetoothComm.sendData(
-                switchSetting1.isChecked(),
-                switchSetting2.isChecked(),
-                switchSetting3.isChecked(),
-                seekBar.getProgress() * 100
+                outpostSwitchSetting1.isChecked(),
+                outpostSwitchSetting2.isChecked(),
+                outpostSwitchSetting3.isChecked(),
+                outpostSeekBar.getProgress() * 100
         )).start();
     }
 
@@ -130,12 +130,12 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
         if (parts.length < 4) return;
 
         handler.post(() -> {
-            switchSetting1.setChecked(parts[0].contains("开启"));
-            switchSetting2.setChecked(parts[1].contains("蓝色"));
-            switchSetting3.setChecked(parts[2].contains("顺时针"));
+            outpostSwitchSetting1.setChecked(parts[0].contains("开启"));
+            outpostSwitchSetting2.setChecked(parts[1].contains("蓝色"));
+            outpostSwitchSetting3.setChecked(parts[2].contains("顺时针"));
             int health = Integer.parseInt(parts[3].split(": ")[1]);
-            seekBar.setProgress(health / 100);
-            etHealthValue.setText(String.valueOf(health));
+            outpostSeekBar.setProgress(health / 100);
+            outpostEtHealthValue.setText(String.valueOf(health));
         });
     }
 
