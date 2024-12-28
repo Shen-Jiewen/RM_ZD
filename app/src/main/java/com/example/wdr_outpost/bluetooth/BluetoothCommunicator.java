@@ -186,6 +186,7 @@ public class BluetoothCommunicator {
      * @param length 数据帧的长度。
      * @return 解析后的结果字符串。
      */
+    @SuppressLint("DefaultLocale")
     private String parseFrame(byte[] buffer, int length) {
         if (buffer == null || length <= 0) {
             return "无效帧";

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:rowCount="3"
+    android:columnCount="2"
+    android:padding="8dp">
+
+    <!-- 卡片 1：正弦波 -->
+    <FrameLayout
+        android:id="@+id/card1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:background="@android:color/darker_gray">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChart1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <!-- 卡片 2：方波 -->
+    <FrameLayout
+        android:id="@+id/card2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:background="@android:color/darker_gray">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChart2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <!-- 卡片 3：三角波 -->
+    <FrameLayout
+        android:id="@+id/card3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:background="@android:color/darker_gray">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChart3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <!-- 卡片 4：爱心正弦波 -->
+    <FrameLayout
+        android:id="@+id/card4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:background="@android:color/darker_gray">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChart4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <!-- 卡片 5：类心电图 -->
+    <FrameLayout
+        android:id="@+id/card5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:background="@android:color/darker_gray">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChart5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <!-- 卡片 6：功率随机波形 -->
+    <FrameLayout
+        android:id="@+id/card6"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:background="@android:color/darker_gray">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChart6"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+</GridLayout>
