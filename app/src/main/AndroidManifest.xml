@@ -35,6 +35,7 @@
         <!-- 前哨站控制页面 -->
         <activity
             android:name=".OutpostDeviceActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true" />
     </application>
 

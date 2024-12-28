@@ -7,16 +7,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.wdr_outpost.bluetooth.BluetoothCommunicator;
+import com.example.wdr_outpost.device.DeviceManager;
+import com.example.wdr_outpost.protocol.OutpostProtocol;
 
-public class OutpostDeviceActivity extends AppCompatActivity implements BluetoothCommunicator.BluetoothCallback {
+public class OutpostDeviceActivity extends AppCompatActivity implements DeviceManager.DeviceCallback<OutpostProtocol.OutpostData> {
     private static final int MIN_PROGRESS = 400;
     private static final int MAX_PROGRESS = 5000;
 
@@ -24,7 +26,7 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
     private Switch outpostSwitchSetting1, outpostSwitchSetting2, outpostSwitchSetting3;
     private SeekBar outpostSeekBar;
     private TextView outpostEtHealthValue;
-    private BluetoothCommunicator bluetoothComm;
+    private DeviceManager<OutpostProtocol.OutpostData> deviceManager;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
@@ -33,8 +35,16 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
         setContentView(R.layout.activity_outpost);
 
         initializeUI();
-        initializeBluetooth();
+        initializeDevice();
         setupListeners();
+
+        // 恢复保存的状态
+        if (savedInstanceState != null) {
+            outpostSwitchSetting1.setChecked(savedInstanceState.getBoolean("switch1"));
+            outpostSwitchSetting2.setChecked(savedInstanceState.getBoolean("switch2"));
+            outpostSwitchSetting3.setChecked(savedInstanceState.getBoolean("switch3"));
+            outpostSeekBar.setProgress(savedInstanceState.getInt("seekBarProgress"));
+        }
     }
 
     private void initializeUI() {
@@ -44,95 +54,69 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
         outpostSeekBar = findViewById(R.id.outpost_sb_setting_progress);
         outpostEtHealthValue = findViewById(R.id.outpost_tv_setting_name_4);
 
-        ImageView outpostIvBack = findViewById(R.id.outpost_iv_back);
-        if (outpostIvBack != null) {
-            outpostIvBack.setOnClickListener(v -> finish());
-        }
+        findViewById(R.id.outpost_iv_back).setOnClickListener(v -> finish());
     }
 
-    private void initializeBluetooth() {
-        new Thread(() -> {
-            BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            if (bluetoothManager == null || bluetoothManager.getAdapter() == null) {
-                handler.post(() -> showToastAndFinish("蓝牙不可用"));
-                return;
-            }
+    private void initializeDevice() {
+        deviceManager = new DeviceManager<>(new OutpostProtocol(), this);
 
-            String deviceAddress = getIntent().getStringExtra("deviceMacAddress");
-            if (deviceAddress == null) {
-                handler.post(() -> showToastAndFinish("未提供设备地址"));
-                return;
-            }
-
-            bluetoothComm = new BluetoothCommunicator(this);
-            BluetoothDevice device = bluetoothManager.getAdapter().getRemoteDevice(deviceAddress);
-            if (device != null && bluetoothComm != null) {
-                bluetoothComm.connect(device);
-            } else {
-                handler.post(() -> showToastAndFinish("无法获取蓝牙设备"));
-            }
-        }).start();
-    }
-
-    private void setupListeners() {
-        if (outpostSwitchSetting1 != null) {
-            outpostSwitchSetting1.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
-        }
-        if (outpostSwitchSetting2 != null) {
-            outpostSwitchSetting2.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
-        }
-        if (outpostSwitchSetting3 != null) {
-            outpostSwitchSetting3.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
-        }
-
-        if (outpostSeekBar != null) {
-            outpostSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @SuppressLint("SetTextI18n")
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (fromUser) {
-                        int actualProgress = progress * 100;
-                        if (actualProgress < MIN_PROGRESS) {
-                            actualProgress = MIN_PROGRESS;
-                            seekBar.setProgress(MIN_PROGRESS / 100);
-                        } else if (actualProgress > MAX_PROGRESS) {
-                            actualProgress = MAX_PROGRESS;
-                            seekBar.setProgress(MAX_PROGRESS / 100);
-                        }
-                        if (outpostEtHealthValue != null) {
-                            outpostEtHealthValue.setText("血量：" + actualProgress);
-                        }
-                    }
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {}
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    sendCurrentState();
-                }
-            });
-        }
-    }
-
-    private void sendCurrentState() {
-        if (bluetoothComm == null) {
-            handler.post(() -> Toast.makeText(this, "蓝牙通信未初始化", Toast.LENGTH_SHORT).show());
+        String deviceAddress = getIntent().getStringExtra("deviceMacAddress");
+        if (deviceAddress == null) {
+            showToastAndFinish("未提供设备地址");
             return;
         }
 
-        new Thread(() -> {
-            boolean setting1 = outpostSwitchSetting1 != null && outpostSwitchSetting1.isChecked();
-            boolean setting2 = outpostSwitchSetting2 != null && outpostSwitchSetting2.isChecked();
-            boolean setting3 = outpostSwitchSetting3 != null && outpostSwitchSetting3.isChecked();
-            int progress = outpostSeekBar != null ? outpostSeekBar.getProgress() * 100 : 0;
+        BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        if (bluetoothManager == null || bluetoothManager.getAdapter() == null) {
+            showToastAndFinish("蓝牙不可用");
+            return;
+        }
 
-            bluetoothComm.sendData(setting1, setting2, setting3, progress);
-        }).start();
+        BluetoothDevice device = bluetoothManager.getAdapter().getRemoteDevice(deviceAddress);
+        if (device != null) {
+            new Thread(() -> deviceManager.connect(device)).start();
+        } else {
+            showToastAndFinish("无法获取蓝牙设备");
+        }
     }
 
-    // BluetoothCallback implementations
+    private void setupListeners() {
+        outpostSwitchSetting1.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
+        outpostSwitchSetting2.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
+        outpostSwitchSetting3.setOnCheckedChangeListener((v, checked) -> sendCurrentState());
+
+        outpostSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    int actualProgress = progress * 100;
+                    actualProgress = Math.max(MIN_PROGRESS, Math.min(MAX_PROGRESS, actualProgress));
+                    seekBar.setProgress(actualProgress / 100);
+                    outpostEtHealthValue.setText("血量：" + actualProgress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                sendCurrentState();
+            }
+        });
+    }
+
+    private void sendCurrentState() {
+        OutpostProtocol.OutpostData data = new OutpostProtocol.OutpostData(
+                outpostSwitchSetting1.isChecked(),
+                outpostSwitchSetting2.isChecked(),
+                outpostSwitchSetting3.isChecked(),
+                outpostSeekBar.getProgress() * 100
+        );
+        new Thread(() -> deviceManager.sendData(data)).start();
+    }
+
     @Override
     public void onConnected() {
         handler.post(() -> Toast.makeText(this, "已连接", Toast.LENGTH_SHORT).show());
@@ -141,44 +125,20 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
     @Override
     public void onConnectionFailed(String error) {
         handler.post(() -> {
-            Toast.makeText(this, "连接失败: " + error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
             finish();
         });
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onDataReceived(String data) {
-        if (data == null || data.isEmpty()) {
-            handler.post(() -> Toast.makeText(this, "接收到的数据为空", Toast.LENGTH_SHORT).show());
-            return;
-        }
-
-        String[] parts = data.split(", ");
-        if (parts.length < 4) {
-            handler.post(() -> Toast.makeText(this, "数据格式不正确", Toast.LENGTH_SHORT).show());
-            return;
-        }
-
+    public void onDataReceived(OutpostProtocol.OutpostData data) {
         handler.post(() -> {
-            if (outpostSwitchSetting1 != null) {
-                outpostSwitchSetting1.setChecked(!parts[0].contains("开启"));
-            }
-            if (outpostSwitchSetting2 != null) {
-                outpostSwitchSetting2.setChecked(parts[1].contains("蓝色"));
-            }
-            if (outpostSwitchSetting3 != null) {
-                outpostSwitchSetting3.setChecked(parts[2].contains("顺时针"));
-            }
-            if (outpostSeekBar != null && outpostEtHealthValue != null) {
-                try {
-                    int health = Integer.parseInt(parts[3].split(": ")[1]);
-                    outpostSeekBar.setProgress(health / 100);
-                    outpostEtHealthValue.setText("血量：" + health);
-                } catch (NumberFormatException e) {
-                    Toast.makeText(this, "解析血量数据失败", Toast.LENGTH_SHORT).show();
-                }
-            }
+            outpostSwitchSetting1.setChecked(data.isOn());
+            outpostSwitchSetting2.setChecked(data.isBlue());
+            outpostSwitchSetting3.setChecked(data.isClockwise());
+            outpostSeekBar.setProgress(data.getHealth() / 100);
+            outpostEtHealthValue.setText("血量：" + data.getHealth());
         });
     }
 
@@ -195,10 +155,34 @@ public class OutpostDeviceActivity extends AppCompatActivity implements Bluetoot
     }
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("switch1", outpostSwitchSetting1.isChecked());
+        outState.putBoolean("switch2", outpostSwitchSetting2.isChecked());
+        outState.putBoolean("switch3", outpostSwitchSetting3.isChecked());
+        outState.putInt("seekBarProgress", outpostSeekBar.getProgress());
+        String deviceAddress = getIntent().getStringExtra("deviceMacAddress");
+        outState.putString("deviceMacAddress", deviceAddress);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        outpostSwitchSetting1.setChecked(savedInstanceState.getBoolean("switch1"));
+        outpostSwitchSetting2.setChecked(savedInstanceState.getBoolean("switch2"));
+        outpostSwitchSetting3.setChecked(savedInstanceState.getBoolean("switch3"));
+        outpostSeekBar.setProgress(savedInstanceState.getInt("seekBarProgress"));
+        String deviceAddress = savedInstanceState.getString("deviceMacAddress");
+        if (deviceAddress != null) {
+            getIntent().putExtra("deviceMacAddress", deviceAddress);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (bluetoothComm != null) {
-            bluetoothComm.disconnect();
+        if (deviceManager != null) {
+            deviceManager.disconnect();
         }
     }
 }

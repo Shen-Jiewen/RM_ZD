@@ -15,4 +15,10 @@
         <item name="android:track">@drawable/custom_switch_track_rb</item>
     </style>
 
+    <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemIconTint">@color/white</item>
+        <item name="itemTextColor">@color/white</item>
+        <item name="android:background">@color/light_blue</item>
+    </style>
+
 </resources>

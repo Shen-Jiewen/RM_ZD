@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
-    <!-- 标题栏 -->
+    <!-- 导航栏 -->
     <RelativeLayout
         android:id="@+id/outpost_rl_title_bar"
         android:layout_width="match_parent"
@@ -38,181 +38,211 @@
 
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/outpost_tv_status_set"
+    <!-- 设备图片 -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/outpost_cv_device_info"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/outpost_rl_title_bar"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/white"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp">
+
+        <ImageView
+            android:id="@+id/outpost_iv_device_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/device_outpost_blue" />
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- 设置项整体布局 -->
+    <LinearLayout
+        android:id="@+id/outpost_ll_settings_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/outpost_rl_title_bar"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:text="状态设置"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:textColor="#4D4D4D"
-        android:fontFamily="@font/custom_font"/>
+        android:layout_below="@id/outpost_rl_title_bar"
+        android:layout_toEndOf="@id/outpost_cv_device_info"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical">
 
-    <!-- 设置列表 -->
-    <RelativeLayout
-        android:id="@+id/outpost_rl_settings_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/outpost_tv_status_set"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp">
+        <!-- 状态设置标题 -->
+        <TextView
+            android:id="@+id/outpost_tv_status_set"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="状态设置"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="#4D4D4D"
+            android:fontFamily="@font/custom_font"/>
 
-        <!-- 设置项1 -->
+        <!-- 设置列表 -->
         <LinearLayout
-            android:id="@+id/outpost_ll_setting_item_1"
+            android:id="@+id/outpost_rl_settings_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_background"
-            android:orientation="horizontal"
-            android:padding="10dp">
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/outpost_tv_setting_name_1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:layout_gravity="center_vertical"
-                android:text="开启"
-                android:fontFamily="@font/custom_font"
-                android:textColor="#000000"
-                android:textSize="24sp" />
-
-            <Switch
-                android:id="@+id/outpost_sw_setting_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="false"
-                style="@style/CustomSwitchMaterial"
-                tools:ignore="UseSwitchCompatOrMaterialXml" />
-
-        </LinearLayout>
-
-        <!-- 设置项2 -->
-        <LinearLayout
-            android:id="@+id/outpost_ll_setting_item_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/outpost_ll_setting_item_1"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_background"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <TextView
-                android:id="@+id/outpost_tv_setting_name_2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:layout_gravity="center_vertical"
-                android:text="颜色"
-                android:fontFamily="@font/custom_font"
-                android:textColor="#000000"
-                android:textSize="24sp" />
-
-            <Switch
-                android:id="@+id/outpost_sw_setting_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="false"
-                style="@style/CustomSwitchMaterial_rb"
-                tools:ignore="UseSwitchCompatOrMaterialXml" />
-
-        </LinearLayout>
-
-        <!-- 设置项3 -->
-        <RelativeLayout
-            android:id="@+id/outpost_rl_setting_item_3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/outpost_ll_setting_item_2"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_background"
-            android:padding="10dp">
-
-            <!-- 设置名称 -->
-            <TextView
-                android:id="@+id/outpost_tv_setting_name_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="8dp"
-                android:text="旋转方向"
-                android:fontFamily="@font/custom_font"
-                android:textColor="#000000"
-                android:textSize="24sp" />
-
-            <!-- 提示文本 -->
-            <TextView
-                android:id="@+id/outpost_tv_setting_hint_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/outpost_tv_setting_name_3"
-                android:layout_alignStart="@id/outpost_tv_setting_name_3"
-                android:text="ON/顺时针 OFF/逆时针"
-                android:fontFamily="@font/custom_font"
-                android:textColor="#8E8E8E"
-                android:textSize="10sp"
-                android:layout_marginEnd="8dp"
-                tools:ignore="SmallSp" />
-
-            <!-- Switch -->
-            <Switch
-                android:id="@+id/outpost_sw_setting_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:checked="false"
-                style="@style/CustomSwitchMaterial"
-                tools:ignore="UseSwitchCompatOrMaterialXml" />
-
-        </RelativeLayout>
-
-        <!-- 设置项4 -->
-        <RelativeLayout
-            android:id="@+id/outpost_rl_setting_item_4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/outpost_rl_setting_item_3"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_background"
-            android:padding="10dp">
-
-            <!-- 设置名称 -->
-            <TextView
-                android:id="@+id/outpost_tv_setting_name_4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="8dp"
-                android:text="血量"
-                android:fontFamily="@font/custom_font"
-                android:textColor="#000000"
-                android:textSize="24sp"/>
-
-            <!-- SeekBar -->
-            <SeekBar
-                android:id="@+id/outpost_sb_setting_progress"
+            <!-- 设置项1 -->
+            <LinearLayout
+                android:id="@+id/outpost_ll_setting_item_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/outpost_tv_setting_name_4"
-                android:layout_marginTop="10dp"
-                android:max="50"
-                android:progress="20"
-                android:layout_alignParentStart="true"
-                android:progressDrawable="@drawable/custom_seekbar_progress"
-                android:thumb="@drawable/custom_seekbar_thumb"/>
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rounded_background"
+                android:orientation="horizontal"
+                android:padding="10dp">
 
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/outpost_tv_setting_name_1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:text="开启"
+                    android:fontFamily="@font/custom_font"
+                    android:textColor="#000000"
+                    android:textSize="24sp" />
 
-    </RelativeLayout>
+                <Switch
+                    android:id="@+id/outpost_sw_setting_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    style="@style/CustomSwitchMaterial"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+            </LinearLayout>
+
+            <!-- 设置项2 -->
+            <LinearLayout
+                android:id="@+id/outpost_ll_setting_item_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rounded_background"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/outpost_tv_setting_name_2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:text="颜色"
+                    android:fontFamily="@font/custom_font"
+                    android:textColor="#000000"
+                    android:textSize="24sp" />
+
+                <Switch
+                    android:id="@+id/outpost_sw_setting_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    style="@style/CustomSwitchMaterial_rb"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+            </LinearLayout>
+
+            <!-- 设置项3 -->
+            <RelativeLayout
+                android:id="@+id/outpost_rl_setting_item_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rounded_background"
+                android:padding="10dp">
+
+                <!-- 设置名称 -->
+                <TextView
+                    android:id="@+id/outpost_tv_setting_name_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="8dp"
+                    android:text="旋转方向"
+                    android:fontFamily="@font/custom_font"
+                    android:textColor="#000000"
+                    android:textSize="24sp" />
+
+                <!-- 提示文本 -->
+                <TextView
+                    android:id="@+id/outpost_tv_setting_hint_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/outpost_tv_setting_name_3"
+                    android:layout_alignStart="@id/outpost_tv_setting_name_3"
+                    android:text="ON/顺时针 OFF/逆时针"
+                    android:fontFamily="@font/custom_font"
+                    android:textColor="#8E8E8E"
+                    android:textSize="10sp"
+                    android:layout_marginEnd="8dp"
+                    tools:ignore="SmallSp" />
+
+                <!-- Switch -->
+                <Switch
+                    android:id="@+id/outpost_sw_setting_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:checked="false"
+                    style="@style/CustomSwitchMaterial"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+            </RelativeLayout>
+
+            <!-- 设置项4 -->
+            <RelativeLayout
+                android:id="@+id/outpost_rl_setting_item_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rounded_background"
+                android:padding="10dp">
+
+                <!-- 设置名称 -->
+                <TextView
+                    android:id="@+id/outpost_tv_setting_name_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="8dp"
+                    android:text="血量：2000"
+                    android:fontFamily="@font/custom_font"
+                    android:textColor="#000000"
+                    android:textSize="24sp"/>
+
+                <!-- SeekBar -->
+                <SeekBar
+                    android:id="@+id/outpost_sb_setting_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/outpost_tv_setting_name_4"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:max="50"
+                    android:progress="20"
+                    android:layout_alignParentStart="true"
+                    android:progressDrawable="@drawable/custom_seekbar_progress"
+                    android:thumb="@drawable/custom_seekbar_thumb"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>
