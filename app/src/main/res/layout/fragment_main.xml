@@ -51,7 +51,7 @@
         android:id="@+id/scanButton"
         android:layout_width="200dp"
         android:layout_height="60dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="24dp"
         android:backgroundTint="@color/light_blue"
         android:stateListAnimator="@animator/button_press_animator"
         android:text="机甲大师启动!"

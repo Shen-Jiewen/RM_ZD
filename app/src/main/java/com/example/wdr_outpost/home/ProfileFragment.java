@@ -1,4 +1,4 @@
-package com.example.wdr_outpost.fragment;
+package com.example.wdr_outpost.home;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

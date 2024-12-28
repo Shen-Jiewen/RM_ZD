@@ -16,9 +16,13 @@
     </style>
 
     <style name="BottomNavigationStyle" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="itemIconTint">@color/white</item>
-        <item name="itemTextColor">@color/white</item>
-        <item name="android:background">@color/light_blue</item>
+        <!-- 禁用涟漪效果 -->
+        <item name="itemBackground">@color/transparent</item>
+        <!-- 设置图标和文本颜色 -->
+        <item name="itemIconTint">@drawable/bottom_nav_icon_color_selector</item>
+        <item name="itemTextColor">@drawable/bottom_nav_text_color_selector</item>
+        <!-- 其他样式 -->
+        <item name="itemIconSize">24dp</item>
     </style>
 
 </resources>

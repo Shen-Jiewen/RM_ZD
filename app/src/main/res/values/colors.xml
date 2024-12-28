@@ -11,4 +11,11 @@
 
     <color name="custom_thumb_color">#FF5722</color> <!-- 橙色 -->
     <color name="custom_track_color">#FFCCBC</color> <!-- 浅橙色 -->
+
+    <!-- 选中状态的颜色 -->
+    <color name="colorPrimary">#0E1826</color>
+    <!-- 未选中状态的颜色 -->
+    <color name="gray">#616161</color>
+
+    <color name="transparent">#00000000</color> <!-- 透明色 -->
 </resources>

@@ -7,8 +7,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.wdr_outpost.fragment.DeviceFragment;
-import com.example.wdr_outpost.fragment.ProfileFragment;
+import com.example.wdr_outpost.home.DeviceFragment;
+import com.example.wdr_outpost.home.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {

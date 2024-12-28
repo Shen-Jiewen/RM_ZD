@@ -1,4 +1,4 @@
-package com.example.wdr_outpost.fragment;
+package com.example.wdr_outpost.home;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -95,7 +95,7 @@ public class DeviceFragment extends Fragment {
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         // 恢复设备列表
         if (savedInstanceState != null) {

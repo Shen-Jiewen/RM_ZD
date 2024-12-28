@@ -4,19 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Fragment 容器 -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="56dp"/>
 
-    <!-- 底部导航栏 -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_gravity="bottom"
+        android:background="@color/light_blue"
         style="@style/BottomNavigationStyle"
         app:menu="@menu/bottom_navigation_menu"/>
 

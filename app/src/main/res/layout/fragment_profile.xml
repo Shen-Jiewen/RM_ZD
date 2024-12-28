@@ -1,13 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@drawable/logo_white_h">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="我的页面"
-        android:textSize="24sp"
-        android:layout_gravity="center"/>
-</FrameLayout>
+        android:background="@color/light_blue"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/CustomToolbarStyle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/toolbarLogo"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:src="@drawable/logo_white_h" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/main_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/number_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="WDR终端"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/custom_font"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/help_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="帮助和反馈"
+                android:textSize="22sp"
+                android:fontFamily="@font/custom_font"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/number_text" />
+
+            <TextView
+                android:id="@+id/settings_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="设置"
+                android:textSize="22sp"
+                android:fontFamily="@font/custom_font"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/help_text" />
+
+            <TextView
+                android:id="@+id/about_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="关于"
+                android:textSize="22sp"
+                android:fontFamily="@font/custom_font"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/settings_text" />
+
+            <TextView
+                android:id="@+id/rating_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="评价"
+                android:textSize="22sp"
+                android:fontFamily="@font/custom_font"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/about_text" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
