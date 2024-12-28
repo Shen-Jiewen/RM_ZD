@@ -1,10 +1,12 @@
-package com.example.wdr_outpost;
+package com.example.wdr_outpost.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
+
+import com.example.wdr_outpost.R;
 
 public class ProfileFragment extends Fragment {
 
