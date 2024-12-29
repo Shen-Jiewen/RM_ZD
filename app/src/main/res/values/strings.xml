@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">WDR终端</string>
+    <string name="device">设备</string>
+    <string name="profile">我的</string>
 </resources>

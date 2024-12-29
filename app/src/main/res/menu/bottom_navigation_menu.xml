@@ -2,10 +2,10 @@
     <item
         android:id="@+id/navigation_device"
         android:icon="@drawable/ic_device_white"
-        android:title="设备"/>
+        android:title="@string/device"/>
 
     <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_profile_white"
-        android:title="我的"/>
+        android:title="@string/profile"/>
 </menu>

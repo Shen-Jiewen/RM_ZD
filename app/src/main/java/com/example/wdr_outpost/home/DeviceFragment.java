@@ -2,6 +2,7 @@ package com.example.wdr_outpost.home;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -62,7 +63,8 @@ public class DeviceFragment extends Fragment {
 
     private final ActivityResultLauncher<Intent> enableBluetoothLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == getActivity().RESULT_OK) {
+                getActivity();
+                if (result.getResultCode() == Activity.RESULT_OK) {
                     scanDevices();
                 } else {
                     Toast.makeText(getContext(), "用户拒绝启用蓝牙", Toast.LENGTH_SHORT).show();
@@ -74,7 +76,7 @@ public class DeviceFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (device != null && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                if (device != null && ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
                     @SuppressLint("MissingPermission") String deviceName = device.getName();
                     if (deviceName != null) {
                         @SuppressLint("MissingPermission") String deviceInfo = device.getName() + " [Classic]\n" + device.getAddress();
@@ -103,7 +105,7 @@ public class DeviceFragment extends Fragment {
             deviceList.addAll(savedInstanceState.getStringArrayList("deviceList"));
         }
 
-        BluetoothManager bluetoothManager = (BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE);
+        BluetoothManager bluetoothManager = (BluetoothManager) requireActivity().getSystemService(Context.BLUETOOTH_SERVICE);
         if (bluetoothManager == null || bluetoothManager.getAdapter() == null) {
             Toast.makeText(getContext(), "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
             return view;
@@ -156,7 +158,7 @@ public class DeviceFragment extends Fragment {
         outState.putStringArrayList("deviceList", deviceList);
     }
 
-    @SuppressLint("ObsoleteSdkInt")
+    @SuppressLint({"ObsoleteSdkInt", "UseRequireInsteadOfGet"})
     private boolean checkPermissions() {
         String[] permissions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ?
                 new String[]{Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.ACCESS_FINE_LOCATION} :
@@ -164,7 +166,7 @@ public class DeviceFragment extends Fragment {
 
         boolean allGranted = true;
         for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
                 allGranted = false;
                 break;
             }
@@ -178,10 +180,10 @@ public class DeviceFragment extends Fragment {
         }
     }
 
-    @SuppressLint("ObsoleteSdkInt")
+    @SuppressLint({"ObsoleteSdkInt", "UseRequireInsteadOfGet"})
     private void requestEnableBluetooth() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_CODE_BLUETOOTH_CONNECT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.BLUETOOTH_CONNECT}, REQUEST_CODE_BLUETOOTH_CONNECT);
             return;
         }
 
@@ -198,7 +200,7 @@ public class DeviceFragment extends Fragment {
         }
 
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        getActivity().registerReceiver(classicBluetoothReceiver, filter);
+        requireActivity().registerReceiver(classicBluetoothReceiver, filter);
         isReceiverRegistered = true;
 
         bluetoothAdapter.startDiscovery();
@@ -207,7 +209,7 @@ public class DeviceFragment extends Fragment {
     @SuppressLint("MissingPermission")
     private void connectClassicBluetoothDevice(String deviceMacAddress) {
         new Thread(() -> {
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
                 BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceMacAddress);
                 if (device != null) {
                     if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
@@ -244,18 +246,18 @@ public class DeviceFragment extends Fragment {
         }).start();
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint({"MissingPermission", "UseRequireInsteadOfGet"})
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
             bluetoothAdapter.cancelDiscovery();
         } else {
             Log.e(TAG, "缺少 BLUETOOTH_SCAN 权限，无法停止蓝牙扫描");
         }
 
         if (isReceiverRegistered) {
-            getActivity().unregisterReceiver(classicBluetoothReceiver);
+            requireActivity().unregisterReceiver(classicBluetoothReceiver);
             isReceiverRegistered = false;
         }
     }

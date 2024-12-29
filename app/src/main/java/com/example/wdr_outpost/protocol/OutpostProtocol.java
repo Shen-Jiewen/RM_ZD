@@ -1,5 +1,7 @@
 package com.example.wdr_outpost.protocol;
 
+import androidx.annotation.NonNull;
+
 import java.io.ByteArrayOutputStream;
 
 public class OutpostProtocol implements DeviceProtocol<OutpostProtocol.OutpostData> {
@@ -45,9 +47,23 @@ public class OutpostProtocol implements DeviceProtocol<OutpostProtocol.OutpostDa
         int statusByte = ((data.isOn() ? 1 : 0) << 3) |
                 ((data.isBlue() ? 1 : 0) << 2) |
                 ((data.isClockwise() ? 1 : 0) << 1);
+
+        // 处理健康值
+        int health = data.getHealth();
+        if (health == 5100) {
+            health = 0xFFFF; // 设置为无限
+        }
+
         // 将健康值分为高字节和低字节
-        int healthHighByte = (data.getHealth() >> 8) & 0xFF;
-        int healthLowByte = data.getHealth() & 0xFF;
+        int healthHighByte = (health >> 8) & 0xFF;
+        ByteArrayOutputStream frame = getByteArrayOutputStream(health, statusByte, healthHighByte);
+        return frame.toByteArray();       // 返回帧数据的字节数组
+    }
+
+    @NonNull
+    private static ByteArrayOutputStream getByteArrayOutputStream(int health, int statusByte, int healthHighByte) {
+        int healthLowByte = health & 0xFF;
+
         // 计算校验和
         int checksum = (statusByte + healthHighByte + healthLowByte) & 0xFF;
 
@@ -59,7 +75,7 @@ public class OutpostProtocol implements DeviceProtocol<OutpostProtocol.OutpostDa
         frame.write(healthLowByte);       // 写入健康值低字节
         frame.write(checksum);            // 写入校验和
         frame.write(FRAME_TAIL);          // 写入帧尾
-        return frame.toByteArray();       // 返回帧数据的字节数组
+        return frame;
     }
 
     /**

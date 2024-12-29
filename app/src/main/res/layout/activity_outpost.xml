@@ -231,8 +231,8 @@
                 android:layout_below="@id/outpost_tv_setting_name_4"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
-                android:max="50"
-                android:progress="20"
+                android:max="5100"
+                android:progress="2000"
                 android:layout_alignParentStart="true"
                 android:progressDrawable="@drawable/custom_seekbar_progress"
                 android:thumb="@drawable/custom_seekbar_thumb"/>

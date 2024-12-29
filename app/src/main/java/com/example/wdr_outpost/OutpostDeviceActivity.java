@@ -20,7 +20,7 @@ import com.example.wdr_outpost.protocol.OutpostProtocol;
 
 public class OutpostDeviceActivity extends AppCompatActivity implements DeviceManager.DeviceCallback<OutpostProtocol.OutpostData> {
     private static final int MIN_PROGRESS = 400;
-    private static final int MAX_PROGRESS = 5000;
+    private static final int MAX_PROGRESS = 5100; // 修改最大值为 5100
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch outpostSwitchSetting1, outpostSwitchSetting2, outpostSwitchSetting3;
@@ -53,6 +53,9 @@ public class OutpostDeviceActivity extends AppCompatActivity implements DeviceMa
         outpostSwitchSetting3 = findViewById(R.id.outpost_sw_setting_3);
         outpostSeekBar = findViewById(R.id.outpost_sb_setting_progress);
         outpostEtHealthValue = findViewById(R.id.outpost_tv_setting_name_4);
+
+        // 设置 SeekBar 的最大值为 5100
+        outpostSeekBar.setMax(MAX_PROGRESS);
 
         findViewById(R.id.outpost_iv_back).setOnClickListener(v -> finish());
     }
@@ -90,10 +93,16 @@ public class OutpostDeviceActivity extends AppCompatActivity implements DeviceMa
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    int actualProgress = progress * 100;
-                    actualProgress = Math.max(MIN_PROGRESS, Math.min(MAX_PROGRESS, actualProgress));
-                    seekBar.setProgress(actualProgress / 100);
-                    outpostEtHealthValue.setText("血量：" + actualProgress);
+                    // 确保进度在最小值和最大值之间
+                    progress = Math.max(MIN_PROGRESS, Math.min(MAX_PROGRESS, progress));
+                    seekBar.setProgress(progress);
+
+                    // 更新 TextView 的显示
+                    if (progress == MAX_PROGRESS) {
+                        outpostEtHealthValue.setText("血量：无限");
+                    } else {
+                        outpostEtHealthValue.setText("血量：" + progress);
+                    }
                 }
             }
 
@@ -108,11 +117,16 @@ public class OutpostDeviceActivity extends AppCompatActivity implements DeviceMa
     }
 
     private void sendCurrentState() {
+        int health = outpostSeekBar.getProgress();
+        if (health == MAX_PROGRESS) {
+            health = 0xFFFF; // 设置为无限
+        }
+
         OutpostProtocol.OutpostData data = new OutpostProtocol.OutpostData(
                 outpostSwitchSetting1.isChecked(),
                 outpostSwitchSetting2.isChecked(),
                 outpostSwitchSetting3.isChecked(),
-                outpostSeekBar.getProgress() * 100
+                health
         );
         new Thread(() -> deviceManager.sendData(data)).start();
     }
@@ -137,8 +151,15 @@ public class OutpostDeviceActivity extends AppCompatActivity implements DeviceMa
             outpostSwitchSetting1.setChecked(data.isOn());
             outpostSwitchSetting2.setChecked(data.isBlue());
             outpostSwitchSetting3.setChecked(data.isClockwise());
-            outpostSeekBar.setProgress(data.getHealth() / 100);
-            outpostEtHealthValue.setText("血量：" + data.getHealth());
+
+            int health = data.getHealth();
+            if (health == 0xFFFF) {
+                outpostSeekBar.setProgress(MAX_PROGRESS);
+                outpostEtHealthValue.setText("血量：无限");
+            } else {
+                outpostSeekBar.setProgress(health);
+                outpostEtHealthValue.setText("血量：" + health);
+            }
         });
     }
 
